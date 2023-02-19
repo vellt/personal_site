@@ -39,6 +39,11 @@ dependencies:
   get: 4.5.1
   sizer: ^2.0.13
   url_strategy: ^0.2.0
+  http: ^0.13.5
+  flutter_link_previewer: ^3.2.0
+  link_preview_generator: ^1.2.0
+  any_link_preview: ^3.0.0
+  flutter_linkify: ^5.0.2
 
 dev_dependencies:
   flutter_test:

@@ -10,12 +10,16 @@ class ConversationPage extends StatelessWidget {
     return SafeArea(
       child: Scaffold(
         backgroundColor: Colors.white,
-        body: Column(
-          children: [
-            SizedBox(
-              height: 95,
-              child: Padding(
-                padding: const EdgeInsets.only(right: 35, left: 35, bottom: 10),
+        body: Padding(
+          padding: EdgeInsets.only(
+              right: (SizerUtil.orientation == Orientation.portrait) ? 20 : 35,
+              left: (SizerUtil.orientation == Orientation.portrait) ? 20 : 35,
+              bottom:
+                  (SizerUtil.orientation == Orientation.portrait) ? 20 : 35),
+          child: Column(
+            children: [
+              SizedBox(
+                height: 95,
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   crossAxisAlignment: CrossAxisAlignment.end,
@@ -25,33 +29,20 @@ class ConversationPage extends StatelessWidget {
                       child: Column(
                         mainAxisSize: MainAxisSize.min,
                         crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          const Text(
-                            "@vellt",
+                        children: const [
+                          Text(
+                            "Beni's",
                             style: TextStyle(
-                                fontSize: 14,
-                                color: Color(0xFFD4D4D4),
-                                fontWeight: FontWeight.normal),
+                                fontSize: 19,
+                                color: Color(0xFF1A1A1A),
+                                fontWeight: FontWeight.bold),
                           ),
-                          const SizedBox(height: 5),
-                          Row(
-                            children: [
-                              const Text(
-                                "Beni's Portfolio site",
-                                style: TextStyle(
-                                    fontSize: 20,
-                                    color: Color(0xFF1A1A1A),
-                                    fontWeight: FontWeight.w500),
-                              ),
-                              const SizedBox(width: 14),
-                              Container(
-                                height: 8,
-                                width: 8,
-                                decoration: BoxDecoration(
-                                    color: const Color(0xFF3BCF41),
-                                    borderRadius: BorderRadius.circular(100)),
-                              )
-                            ],
+                          Text(
+                            "Portfolio site",
+                            style: TextStyle(
+                                fontSize: 19,
+                                color: Color(0xFF5E5E5E),
+                                fontWeight: FontWeight.w100),
                           )
                         ],
                       ),
@@ -66,43 +57,36 @@ class ConversationPage extends StatelessWidget {
                   ],
                 ),
               ),
-            ),
-            SizedBox(
-              height: 2,
-              child: Divider(
-                color: Color(0xFFFAFAFA),
-                thickness: 2,
-              ),
-            ),
-            Expanded(
-              child: ListView.builder(
-                padding: EdgeInsets.symmetric(vertical: 20),
-                physics: BouncingScrollPhysics(),
-                itemCount: 1,
-                itemBuilder: (context, index) {
-                  return Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 35),
-                    child: Row(
+              Expanded(
+                child: ListView.builder(
+                  padding: EdgeInsets.symmetric(vertical: 20),
+                  physics: BouncingScrollPhysics(),
+                  itemCount: 1,
+                  itemBuilder: (context, index) {
+                    return Row(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         mainAxisAlignment: (index % 2 != 0)
                             ? MainAxisAlignment.end
                             : MainAxisAlignment.start,
                         //this will determine if the message should be displayed left or right
                         children: [
-                          if ((index % 2 == 0))
+                          if ((index % 2 == 0) &&
+                              SizerUtil.orientation != Orientation.portrait)
                             Padding(
                               padding: const EdgeInsets.only(top: 8),
                               child: CircleAvatar(
-                                radius: 15,
+                                radius: 25,
+                                backgroundColor: Colors.white,
                                 backgroundImage: NetworkImage(
-                                    "https://avatars.githubusercontent.com/u/61885011?v=4"),
+                                    "https://cdn.dribbble.com/userupload/3668818/file/original-82d33fec976d80ee37bdc10eb32c87c2.png?compress=1&resize=240x180&vertical=center"),
                               ),
                             ),
-                          SizedBox(width: 20),
+                          if (SizerUtil.orientation != Orientation.portrait)
+                            SizedBox(width: 16),
                           Container(
                             margin: EdgeInsets.symmetric(vertical: 8),
                             padding: EdgeInsets.symmetric(
-                                vertical: 20, horizontal: 35),
+                                vertical: 20, horizontal: 25),
                             constraints: BoxConstraints(maxWidth: 60.w),
                             decoration: BoxDecoration(
                                 color: (index % 2 == 0)
@@ -110,98 +94,73 @@ class ConversationPage extends StatelessWidget {
                                     : Colors.blue,
                                 borderRadius: BorderRadius.circular(8)),
                             child: SelectableText(
-                              "Lorem ipsum dolor sit amet, ",
+                              "Lorem! 👋 Ipsum dolor sit amet! 🎉🎉",
                               style: TextStyle(
                                   color: (index % 2 == 0)
                                       ? Colors.black
                                       : Colors.white),
                             ),
                           )
-                        ]),
-                  );
-                },
+                        ]);
+                  },
+                ),
               ),
-            ),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 35),
-              child: SizedBox(
+              SizedBox(
                 height: 2,
                 child: Divider(
                   color: Color(0xFFFAFAFA),
                   thickness: 2,
                 ),
               ),
-            ),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 35, vertical: 25),
-              child: Row(
-                children: [
-                  Flexible(
-                    child: Material(
-                      color: Color(0xFFFAFAFA),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8), // <-- Radius
-                      ),
-                      child: Container(
-                        height: 65,
-                        padding: const EdgeInsets.only(right: 15),
-                        alignment: Alignment.center,
-                        child: Padding(
-                          padding: EdgeInsets.only(left: 10),
-                          child: TextField(
-                              style: TextStyle(
-                                  color: Colors.black,
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.normal),
-                              textAlignVertical: TextAlignVertical.center,
-                              decoration: InputDecoration(
-                                  hintText: "Write me..",
-                                  hintStyle: TextStyle(
-                                      color: Color(0xFFA4A4A4),
-                                      fontSize: 18,
-                                      fontWeight: FontWeight.w200),
-                                  border: InputBorder.none,
-                                  prefixIcon: IconButton(
-                                      splashRadius: 18,
-                                      onPressed: () {},
-                                      icon: Icon(
-                                        Icons.arrow_forward_ios_sharp,
-                                        color: Color(0xFFBABABA),
-                                        size: 16,
-                                      )))),
-                        ),
-                      ),
-                    ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.only(left: 15),
-                    child: SizedBox(
-                      height: 65,
-                      width: 65,
+              Padding(
+                padding: EdgeInsets.only(
+                    top: (SizerUtil.orientation == Orientation.portrait)
+                        ? 15
+                        : 25),
+                child: Row(
+                  children: [
+                    Flexible(
                       child: Material(
-                        color: Color(0xFFFAFAFA), // háttérszín beállítása
-                        shape: const CircleBorder(),
-                        child: SizedBox(
-                          height: 50,
-                          child: IconButton(
-                              splashRadius: 31,
-                              onPressed: () {},
-                              icon: Padding(
-                                padding: const EdgeInsets.only(left: 5),
-                                child: const Icon(
-                                  Icons.send,
-                                  size: 26,
-                                  color: Colors.blue,
-                                ),
-                              )),
+                        color: Color(0xFFFAFAFA),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8), // <-- Radius
+                        ),
+                        child: Container(
+                          height: 65,
+                          padding: const EdgeInsets.only(right: 15),
+                          alignment: Alignment.center,
+                          child: Padding(
+                            padding: EdgeInsets.only(left: 10),
+                            child: TextField(
+                                style: TextStyle(
+                                    color: Colors.black,
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.normal),
+                                textAlignVertical: TextAlignVertical.center,
+                                decoration: InputDecoration(
+                                    hintText: "Write me..",
+                                    hintStyle: TextStyle(
+                                        color: Color(0xFFA4A4A4),
+                                        fontSize: 18,
+                                        fontWeight: FontWeight.w200),
+                                    border: InputBorder.none,
+                                    prefixIcon: (SizerUtil.orientation ==
+                                            Orientation.portrait)
+                                        ? null
+                                        : Icon(
+                                            Icons.message,
+                                            color: Color(0xFFBABABA),
+                                            size: 16,
+                                          ))),
+                          ),
                         ),
                       ),
                     ),
-                  ),
-                ],
-              ),
-            )
-          ],
+                  ],
+                ),
+              )
+            ],
+          ),
         ),
       ),
     );

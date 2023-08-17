@@ -45,6 +45,7 @@ dependencies:
   diacritic: ^0.1.3
   just_the_tooltip: ^0.0.12
   intl: ^0.18.1
+  get_storage: ^2.1.1
 
 dev_dependencies:
   flutter_test:

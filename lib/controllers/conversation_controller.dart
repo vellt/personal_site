@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:flutter/cupertino.dart';
 import 'package:http/http.dart' as http;
 import 'package:get/get.dart';
 import 'package:personal_site/models/command.dart';
@@ -127,21 +128,8 @@ class ConversationController extends GetxController {
     }
   }
 
-  Future stillInProgress() async {
-    await Future.delayed(Duration(milliseconds: 100), () {
-      _addMessage(Message(
-          id: messages.length + 1,
-          isBot: true,
-          isBehind: messages.length - 1 < 0
-              ? IsBehind.user
-              : (messages[messages.length - 1].isBot
-                  ? IsBehind.bot
-                  : IsBehind.user),
-          time: DateTime.now(),
-          message: (isEnglish)
-              ? "Unfortunately the dark mode is not ready yet.🙁"
-              : "Sajnos a sötét mód még nincs kész. 🙁"));
-    });
+  Future stillInProgress(Function() switchTheme) async {
+    switchTheme();
   }
 
   Future switchLanguage() async {

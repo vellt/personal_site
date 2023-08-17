@@ -299,8 +299,11 @@ class ConversationPage extends StatelessWidget {
                                         fontWeight: FontWeight.normal),
                                     textAlignVertical: TextAlignVertical.center,
                                     decoration: InputDecoration(
-                                        contentPadding:
-                                            EdgeInsets.only(bottom: 8.5),
+                                        contentPadding: EdgeInsets.only(
+                                            bottom: (SizerUtil.orientation ==
+                                                    Orientation.portrait)
+                                                ? 18.5
+                                                : 8.5),
                                         hintText: "Write me..",
                                         hintStyle: TextStyle(
                                             color: Color.fromARGB(

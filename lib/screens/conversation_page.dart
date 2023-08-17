@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_linkify/flutter_linkify.dart';
 import 'package:get/get.dart';
+import 'package:intl/intl.dart';
 import 'package:just_the_tooltip/just_the_tooltip.dart';
 import 'package:personal_site/controller/conversation_controller.dart';
 import 'package:personal_site/models/message.dart';
@@ -161,7 +162,7 @@ class ConversationPage extends StatelessWidget {
                                 SizerUtil.orientation != Orientation.portrait)
                               (List.from(controller.messages.reversed)[index]
                                           .isBehind ==
-                                      IsBehind.User)
+                                      IsBehind.user)
                                   ? Stack(
                                       children: [
                                         Padding(
@@ -202,38 +203,60 @@ class ConversationPage extends StatelessWidget {
                                     ),
                             if (SizerUtil.orientation != Orientation.portrait)
                               SizedBox(width: 16),
-                            Container(
-                                margin: EdgeInsets.symmetric(vertical: 8),
-                                padding: EdgeInsets.symmetric(
-                                    vertical: 20, horizontal: 25),
-                                constraints: BoxConstraints(
-                                    maxWidth: (SizerUtil.orientation ==
-                                            Orientation.portrait)
-                                        ? 80.w
-                                        : 60.w),
-                                decoration: BoxDecoration(
-                                    color: (List.from(controller
-                                                .messages.reversed)[index]
-                                            .isBot)
-                                        ? Color(0xFFF4F4F4)
-                                        : Colors.blue,
-                                    borderRadius: BorderRadius.circular(8)),
-                                child: Builder(builder: (context) {
-                                  return SelectableLinkify(
-                                    onOpen: (link) {
-                                      html.window.open(link.url, "_blank");
-                                    },
-                                    text: List.from(
-                                            controller.messages.reversed)[index]
-                                        .message,
-                                    style: TextStyle(
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.end,
+                              children: [
+                                Container(
+                                    margin: EdgeInsets.symmetric(vertical: 8),
+                                    padding: EdgeInsets.symmetric(
+                                        vertical: 20, horizontal: 25),
+                                    constraints: BoxConstraints(
+                                        maxWidth: (SizerUtil.orientation ==
+                                                Orientation.portrait)
+                                            ? 80.w
+                                            : 60.w),
+                                    decoration: BoxDecoration(
                                         color: (List.from(controller
                                                     .messages.reversed)[index]
                                                 .isBot)
-                                            ? Colors.black
-                                            : Colors.white),
+                                            ? Color(0xFFF4F4F4)
+                                            : Colors.blue,
+                                        borderRadius: BorderRadius.circular(8)),
+                                    child: Builder(builder: (context) {
+                                      return SelectableLinkify(
+                                        onOpen: (link) {
+                                          html.window.open(link.url, "_blank");
+                                        },
+                                        text: List.from(controller
+                                                .messages.reversed)[index]
+                                            .message,
+                                        style: TextStyle(
+                                            color: (List.from(controller
+                                                        .messages
+                                                        .reversed)[index]
+                                                    .isBot)
+                                                ? Colors.black
+                                                : Colors.white),
+                                      );
+                                    })),
+                                Builder(builder: (context) {
+                                  DateTime dt = List.from(
+                                          controller.messages.reversed)[index]
+                                      .time as DateTime;
+                                  String formattedDate =
+                                      DateFormat('yyyy. MM. dd. (kk:mm)')
+                                          .format(dt);
+                                  return Text(
+                                    formattedDate,
+                                    style: TextStyle(
+                                        fontSize: 10,
+                                        color:
+                                            Color.fromARGB(255, 207, 207, 207),
+                                        fontWeight: FontWeight.w100),
                                   );
-                                }))
+                                })
+                              ],
+                            )
                           ]),
                     );
                   },
@@ -282,6 +305,8 @@ class ConversationPage extends StatelessWidget {
                               child: Padding(
                                 padding: EdgeInsets.only(left: 10),
                                 child: TextField(
+                                    textAlignVertical: TextAlignVertical
+                                        .center, // ez még kellett h ténylgesen középre kerüljön a szöveg isDense: true,
                                     focusNode: unitCodeCtrlFocusNode,
                                     controller: textEditingController,
                                     onSubmitted: (value) {
@@ -294,16 +319,13 @@ class ConversationPage extends StatelessWidget {
                                           .requestFocus(unitCodeCtrlFocusNode);
                                     },
                                     style: TextStyle(
-                                        color: Colors.black,
-                                        fontSize: 16,
-                                        fontWeight: FontWeight.normal),
-                                    textAlignVertical: TextAlignVertical.center,
+                                      color: Colors.black,
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.normal,
+                                    ),
                                     decoration: InputDecoration(
-                                        contentPadding: EdgeInsets.only(
-                                            bottom: (SizerUtil.orientation ==
-                                                    Orientation.portrait)
-                                                ? 18.5
-                                                : 8.5),
+                                        isDense: true,
+                                        contentPadding: EdgeInsets.zero,
                                         hintText: "Write me..",
                                         hintStyle: TextStyle(
                                             color: Color.fromARGB(

@@ -34,10 +34,11 @@ class ConversationController extends GetxController {
                 id: messages.length + 1,
                 isBot: true,
                 isBehind: messages.length - 1 < 0
-                    ? IsBehind.User
+                    ? IsBehind.user
                     : (messages[messages.length - 1].isBot
-                        ? IsBehind.Bot
-                        : IsBehind.User),
+                        ? IsBehind.bot
+                        : IsBehind.user),
+                time: DateTime.now(),
                 message: (isEnglish)
                     ? "Is that what you meant? 📌 ${commands.where((element) => element.isEnabled == isEnabled).map((e) => e.label[(isEnglish) ? "en" : "hu"]).toList()[matches.bestMatchIndex]}"
                     : "Erre gondolt? 📌 ${commands.where((element) => element.isEnabled == isEnabled).map((e) => e.label[(isEnglish) ? "en" : "hu"]).toList()[matches.bestMatchIndex]}"));
@@ -58,11 +59,12 @@ class ConversationController extends GetxController {
               _addMessage(Message(
                   id: messages.length + 1,
                   isBot: true,
+                  time: DateTime.now(),
                   isBehind: messages.length - 1 < 0
-                      ? IsBehind.User
+                      ? IsBehind.user
                       : (messages[messages.length - 1].isBot
-                          ? IsBehind.Bot
-                          : IsBehind.User),
+                          ? IsBehind.bot
+                          : IsBehind.user),
                   message: answer));
             });
           }
@@ -97,10 +99,11 @@ class ConversationController extends GetxController {
                 id: messages.length + 1,
                 isBot: true,
                 isBehind: messages.length - 1 < 0
-                    ? IsBehind.User
+                    ? IsBehind.user
                     : (messages[messages.length - 1].isBot
-                        ? IsBehind.Bot
-                        : IsBehind.User),
+                        ? IsBehind.bot
+                        : IsBehind.user),
+                time: DateTime.now(),
                 message: answer));
           });
         }
@@ -114,10 +117,11 @@ class ConversationController extends GetxController {
           id: messages.length + 1,
           isBot: false,
           isBehind: messages.length - 1 < 0
-              ? IsBehind.User
+              ? IsBehind.user
               : (messages[messages.length - 1].isBot
-                  ? IsBehind.Bot
-                  : IsBehind.User),
+                  ? IsBehind.bot
+                  : IsBehind.user),
+          time: DateTime.now(),
           message: message));
       newAnswer(message: message, isEnabled: true);
     }
@@ -129,10 +133,11 @@ class ConversationController extends GetxController {
           id: messages.length + 1,
           isBot: true,
           isBehind: messages.length - 1 < 0
-              ? IsBehind.User
+              ? IsBehind.user
               : (messages[messages.length - 1].isBot
-                  ? IsBehind.Bot
-                  : IsBehind.User),
+                  ? IsBehind.bot
+                  : IsBehind.user),
+          time: DateTime.now(),
           message: (isEnglish)
               ? "Unfortunately the dark mode is not ready yet.🙁"
               : "Sajnos a sötét mód még nincs kész. 🙁"));
@@ -148,10 +153,11 @@ class ConversationController extends GetxController {
             id: messages.length + 1,
             isBot: true,
             isBehind: messages.length - 1 < 0
-                ? IsBehind.User
+                ? IsBehind.user
                 : (messages[messages.length - 1].isBot
-                    ? IsBehind.Bot
-                    : IsBehind.User),
+                    ? IsBehind.bot
+                    : IsBehind.user),
+            time: DateTime.now(),
             message: commands[_indexOfCommand("Köszönés",
                     isEnglish: false, isEnabled: true)]
                 .answers[(isEnglish) ? "en" : "hu"][0]));
@@ -163,10 +169,11 @@ class ConversationController extends GetxController {
             id: messages.length + 1,
             isBot: true,
             isBehind: messages.length - 1 < 0
-                ? IsBehind.User
+                ? IsBehind.user
                 : (messages[messages.length - 1].isBot
-                    ? IsBehind.Bot
-                    : IsBehind.User),
+                    ? IsBehind.bot
+                    : IsBehind.user),
+            time: DateTime.now(),
             message: commands[_indexOfCommand("Köszönés",
                     isEnglish: false, isEnabled: true)]
                 .answers[(isEnglish) ? "en" : "hu"][0]));
@@ -210,10 +217,11 @@ class ConversationController extends GetxController {
         id: 0,
         isBot: true,
         isBehind: messages.length - 1 < 0
-            ? IsBehind.User
+            ? IsBehind.user
             : (messages[messages.length - 1].isBot
-                ? IsBehind.Bot
-                : IsBehind.User),
+                ? IsBehind.bot
+                : IsBehind.user),
+        time: DateTime.now(),
         message: commands[
                 _indexOfCommand("Köszönés", isEnglish: false, isEnabled: true)]
             .answers[(isEnglish) ? "en" : "hu"][0]));

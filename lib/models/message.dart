@@ -3,11 +3,14 @@ class Message {
   bool isBot;
   IsBehind isBehind;
   String message;
-  Message(
-      {required this.id,
-      required this.isBot,
-      required this.isBehind,
-      required this.message});
+  DateTime time;
+  Message({
+    required this.id,
+    required this.isBot,
+    required this.isBehind,
+    required this.message,
+    required this.time,
+  });
 }
 
-enum IsBehind { User, Bot }
+enum IsBehind { user, bot }

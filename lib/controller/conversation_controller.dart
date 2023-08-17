@@ -4,81 +4,174 @@ import 'package:get/get.dart';
 import 'package:personal_site/models/command.dart';
 import 'package:personal_site/models/message.dart';
 import 'dart:async';
+import 'package:string_similarity/string_similarity.dart';
+import 'package:diacritic/diacritic.dart';
 
 class ConversationController extends GetxController {
   List<Message> messages = [];
   List<Command> commands = [];
   bool isEnglish = false;
 
-  Future newAnswer({required String message}) async {
+  Future newAnswer({required String message, required bool isEnabled}) async {
     await Future.delayed(const Duration(milliseconds: 150), () async {
-      print("válasz folyamatban..");
+      if (!_isTheCommandExist(message, isEnabled)) {
+        BestMatch matches = (isEnglish)
+            ? message.toLowerCase().trim().bestMatch(commands
+                .where((element) => element.isEnabled == isEnabled)
+                .map((e) => (e.label["en"].toString()).toLowerCase().trim())
+                .toList())
+            : removeDiacritics(message.toLowerCase().trim()).bestMatch(commands
+                .where((element) => element.isEnabled == isEnabled)
+                .map((e) => (e.id.toString()).toLowerCase().trim())
+                .toList());
+        // van 80%-ban egyező találat
+        if (matches.bestMatch.rating != null &&
+            matches.bestMatch.rating! >= 0.75) {
+          int index = matches.bestMatchIndex;
 
-      if (!_isTheCommandExist(message)) {
-        await newAnswer(message: isEnglish ? "Not found" : "Nincs találat");
+          await Future.delayed(Duration(milliseconds: 100), () {
+            _addMessage(Message(
+                id: messages.length + 1,
+                isBot: true,
+                isBehind: messages.length - 1 < 0
+                    ? IsBehind.User
+                    : (messages[messages.length - 1].isBot
+                        ? IsBehind.Bot
+                        : IsBehind.User),
+                message: (isEnglish)
+                    ? "Is that what you meant? 📌 ${commands.where((element) => element.isEnabled == isEnabled).map((e) => e.label[(isEnglish) ? "en" : "hu"]).toList()[matches.bestMatchIndex]}"
+                    : "Erre gondolt? 📌 ${commands.where((element) => element.isEnabled == isEnabled).map((e) => e.label[(isEnglish) ? "en" : "hu"]).toList()[matches.bestMatchIndex]}"));
+          });
+          print("van egy majdnem talalat: ${message}");
+          for (var answer in commands
+              .where((element) => element.isEnabled == isEnabled)
+              .toList()[index]
+              .answers[(isEnglish) ? "en" : "hu"]!) {
+            bool condition = List.of(commands
+                        .where((element) => element.isEnabled == isEnabled)
+                        .toList()[index]
+                        .answers[(isEnglish) ? "en" : "hu"]!)
+                    .indexOf(answer) ==
+                0;
+            await Future.delayed(
+                Duration(milliseconds: (condition) ? 200 : 450), () {
+              _addMessage(Message(
+                  id: messages.length + 1,
+                  isBot: true,
+                  isBehind: messages.length - 1 < 0
+                      ? IsBehind.User
+                      : (messages[messages.length - 1].isBot
+                          ? IsBehind.Bot
+                          : IsBehind.User),
+                  message: answer));
+            });
+          }
+        } else {
+          //biztios nem létezik
+          print("nincs talalat: ${message}");
+          await newAnswer(
+              message: isEnglish ? "Not found" : "Nincs találat",
+              isEnabled: false);
+          await newAnswer(
+              message: isEnglish ? "Command list" : "Parancs lista",
+              isEnabled: true);
+        }
       } else {
-        int index = _indexOfCommand(message, isEnglish: isEnglish);
-        for (var answer
-            in commands[index].answers[(isEnglish) ? "en" : "hu"]!) {
-          bool condition =
-              List.of(commands[index].answers[(isEnglish) ? "en" : "hu"]!)
-                      .indexOf(answer) ==
-                  0;
+        // van pontosan egyező találat
+        print("van egy pontos talalat: ${message}");
+        int index = _indexOfCommand(message,
+            isEnglish: isEnglish, isEnabled: isEnabled);
+        for (var answer in commands
+            .where((element) => element.isEnabled == isEnabled)
+            .toList()[index]
+            .answers[(isEnglish) ? "en" : "hu"]!) {
+          bool condition = List.of(commands
+                      .where((element) => element.isEnabled == isEnabled)
+                      .toList()[index]
+                      .answers[(isEnglish) ? "en" : "hu"]!)
+                  .indexOf(answer) ==
+              0;
           await Future.delayed(Duration(milliseconds: (condition) ? 200 : 450),
               () {
-            _addMessage(
-                Message(id: messages.length + 1, isBot: true, message: answer));
+            _addMessage(Message(
+                id: messages.length + 1,
+                isBot: true,
+                isBehind: messages.length - 1 < 0
+                    ? IsBehind.User
+                    : (messages[messages.length - 1].isBot
+                        ? IsBehind.Bot
+                        : IsBehind.User),
+                message: answer));
           });
         }
-        print("van.");
       }
     });
   }
 
   newCommand({required String message}) async {
-    _addMessage(
-        Message(id: messages.length + 1, isBot: false, message: message));
-    switch (message) {
-      case "Language to English":
-        await _switchToEnglish(message);
-        break;
-      case "Válts angolra":
-        await _switchToEnglish(message);
-        break;
-      case "Language to Hungarian":
-        await _switchToHungarian(message);
-        break;
-      case "Válts magyarra":
-        _switchToHungarian(message);
-        break;
-      default:
-        newAnswer(message: message);
+    if (message.trim() != "") {
+      _addMessage(Message(
+          id: messages.length + 1,
+          isBot: false,
+          isBehind: messages.length - 1 < 0
+              ? IsBehind.User
+              : (messages[messages.length - 1].isBot
+                  ? IsBehind.Bot
+                  : IsBehind.User),
+          message: message));
+      newAnswer(message: message, isEnabled: true);
     }
   }
 
-  Future _switchToEnglish(String message) async {
-    isEnglish = true;
-    newAnswer(message: message);
-    await Future.delayed(Duration(milliseconds: 650), () {
+  Future stillInProgress() async {
+    await Future.delayed(Duration(milliseconds: 100), () {
       _addMessage(Message(
-          id: 0,
+          id: messages.length + 1,
           isBot: true,
-          message: commands[_indexOfCommand("Köszönés", isEnglish: false)]
-              .answers[(isEnglish) ? "en" : "hu"][0]));
+          isBehind: messages.length - 1 < 0
+              ? IsBehind.User
+              : (messages[messages.length - 1].isBot
+                  ? IsBehind.Bot
+                  : IsBehind.User),
+          message: (isEnglish)
+              ? "Unfortunately the dark mode is not ready yet.🙁"
+              : "Sajnos a sötét mód még nincs kész. 🙁"));
     });
   }
 
-  Future _switchToHungarian(String message) async {
-    isEnglish = false;
-    newAnswer(message: message);
-
-    await Future.delayed(Duration(milliseconds: 650), () {
-      _addMessage(Message(
-          id: 0,
-          isBot: true,
-          message: commands[_indexOfCommand("Köszönés", isEnglish: false)]
-              .answers[(isEnglish) ? "en" : "hu"][0]));
-    });
+  Future switchLanguage() async {
+    isEnglish = !isEnglish;
+    if (isEnglish) {
+      newAnswer(message: "en", isEnabled: false);
+      await Future.delayed(Duration(milliseconds: 650), () {
+        _addMessage(Message(
+            id: messages.length + 1,
+            isBot: true,
+            isBehind: messages.length - 1 < 0
+                ? IsBehind.User
+                : (messages[messages.length - 1].isBot
+                    ? IsBehind.Bot
+                    : IsBehind.User),
+            message: commands[_indexOfCommand("Köszönés",
+                    isEnglish: false, isEnabled: true)]
+                .answers[(isEnglish) ? "en" : "hu"][0]));
+      });
+    } else {
+      newAnswer(message: "hu", isEnabled: false);
+      await Future.delayed(Duration(milliseconds: 650), () {
+        _addMessage(Message(
+            id: messages.length + 1,
+            isBot: true,
+            isBehind: messages.length - 1 < 0
+                ? IsBehind.User
+                : (messages[messages.length - 1].isBot
+                    ? IsBehind.Bot
+                    : IsBehind.User),
+            message: commands[_indexOfCommand("Köszönés",
+                    isEnglish: false, isEnabled: true)]
+                .answers[(isEnglish) ? "en" : "hu"][0]));
+      });
+    }
   }
 
   _addMessage(Message message) {
@@ -86,15 +179,19 @@ class ConversationController extends GetxController {
     update();
   }
 
-  int _indexOfCommand(String command, {required bool isEnglish}) {
+  int _indexOfCommand(String command,
+      {required bool isEnglish, required bool isEnabled}) {
     return commands
+        .where((element) => element.isEnabled == isEnabled)
         .map((e) => e.label[(isEnglish) ? "en" : "hu"].toString().toLowerCase())
         .toList()
-        .indexOf(command.toLowerCase());
+        .indexOf(command.toLowerCase().trim());
   }
 
-  bool _isTheCommandExist(String command) {
+  bool _isTheCommandExist(String command, isEnabled) {
+    print(">>>>>${command} ${isEnabled}");
     return commands
+        .where((element) => element.isEnabled == isEnabled)
         .map((e) => e.label[(isEnglish) ? "en" : "hu"].toString().toLowerCase())
         .contains(command.toLowerCase());
   }
@@ -104,14 +201,21 @@ class ConversationController extends GetxController {
     // TODO:
     super.onInit();
     final response = await http.get(Uri.parse(
-        "https://gist.githubusercontent.com/vellt/70bef82cc7a33783c2d17037de5c564e/raw/d5c119f429743784ec0b3f11063b6adac2b41690/index.json"));
+        "https://gist.githubusercontent.com/vellt/70bef82cc7a33783c2d17037de5c564e/raw/14caa533af5cd2abf8a1b59403042ab2ca594209/index.json"));
     commands = List<Command>.from(
         json.decode(response.body).map((item) => Command.fromJson(item)));
 
+    print(_indexOfCommand("Köszönés", isEnglish: false, isEnabled: true));
     _addMessage(Message(
         id: 0,
         isBot: true,
-        message: commands[_indexOfCommand("Köszönés", isEnglish: false)]
+        isBehind: messages.length - 1 < 0
+            ? IsBehind.User
+            : (messages[messages.length - 1].isBot
+                ? IsBehind.Bot
+                : IsBehind.User),
+        message: commands[
+                _indexOfCommand("Köszönés", isEnglish: false, isEnabled: true)]
             .answers[(isEnglish) ? "en" : "hu"][0]));
   }
 }

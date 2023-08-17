@@ -1,13 +1,12 @@
-import 'package:any_link_preview/any_link_preview.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_linkify/flutter_linkify.dart';
 import 'package:get/get.dart';
-import 'package:link_preview_generator/link_preview_generator.dart';
+import 'package:just_the_tooltip/just_the_tooltip.dart';
 import 'package:personal_site/controller/conversation_controller.dart';
+import 'package:personal_site/models/message.dart';
 import 'package:sizer/sizer.dart';
 import 'dart:html' as html;
-import 'package:flutter_link_previewer/flutter_link_previewer.dart';
 
 class ConversationPage extends StatelessWidget {
   ConversationPage({Key? key}) : super(key: key);
@@ -33,7 +32,8 @@ class ConversationPage extends StatelessWidget {
                       (SizerUtil.orientation == Orientation.portrait) ? 20 : 35,
                 ),
                 child: SizedBox(
-                  height: 95,
+                  height:
+                      (SizerUtil.orientation == Orientation.portrait) ? 65 : 80,
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     crossAxisAlignment: CrossAxisAlignment.end,
@@ -43,34 +43,90 @@ class ConversationPage extends StatelessWidget {
                         child: Column(
                           mainAxisSize: MainAxisSize.min,
                           crossAxisAlignment: CrossAxisAlignment.start,
-                          children: const [
+                          children: [
                             Text(
-                              "Beni's",
+                              "@vellt",
                               style: TextStyle(
-                                  fontSize: 19,
-                                  color: Color(0xFF1A1A1A),
-                                  fontWeight: FontWeight.bold),
-                            ),
-                            Text(
-                              "Portfolio site",
-                              style: TextStyle(
-                                  fontSize: 19,
-                                  color: Color(0xFF5E5E5E),
+                                  fontSize: 13,
+                                  color: Color.fromARGB(255, 207, 207, 207),
                                   fontWeight: FontWeight.w100),
+                            ),
+                            Row(
+                              children: [
+                                Text(
+                                  "Portfolio site",
+                                  style: TextStyle(
+                                      fontSize: 19,
+                                      color: Colors.black,
+                                      fontWeight: FontWeight.w500),
+                                ),
+                                SizedBox(
+                                  width: 8,
+                                ),
+                                SizedBox(
+                                  height: 10.5,
+                                  width: 8,
+                                  child: Align(
+                                    alignment: Alignment.bottomLeft,
+                                    child: GestureDetector(
+                                      child: JustTheTooltip(
+                                        content: Padding(
+                                          padding: const EdgeInsets.all(8.0),
+                                          child: Text("The site is available"),
+                                        ),
+                                        child: Container(
+                                            height: 8,
+                                            decoration: BoxDecoration(
+                                                color: Colors.green,
+                                                borderRadius: BorderRadius.all(
+                                                    Radius.circular(20)))),
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ],
                             )
                           ],
                         ),
                       ),
-                      IconButton(
-                          onPressed: () {},
-                          icon: const Icon(
-                            Icons.dark_mode,
-                            color: Colors.black,
-                            size: 22,
-                          )),
+                      Row(
+                        children: [
+                          IconButton(
+                              onPressed: () {
+                                controller.switchLanguage();
+                              },
+                              icon: const Icon(
+                                Icons.language,
+                                color: Colors.black,
+                                size: 22,
+                              )),
+                          IconButton(
+                              onPressed: () {
+                                controller.stillInProgress();
+                              },
+                              icon: const Icon(
+                                Icons.dark_mode,
+                                color: Colors.black,
+                                size: 22,
+                              )),
+                        ],
+                      )
                     ],
                   ),
                 ),
+              ),
+              SizedBox(
+                height: 16,
+              ),
+              SizedBox(
+                height: 0.5,
+                child: Divider(
+                  color: Colors.black12,
+                  height: 0.5,
+                ),
+              ),
+              SizedBox(
+                height: 1.5,
               ),
               Expanded(
                   child: Align(
@@ -99,28 +155,62 @@ class ConversationPage extends StatelessWidget {
                                       .isBot)
                                   ? MainAxisAlignment.end
                                   : MainAxisAlignment.start,
-                          //this will determine if the message should be displayed left or right
                           children: [
                             if (List.from(controller.messages.reversed)[index]
                                     .isBot &&
                                 SizerUtil.orientation != Orientation.portrait)
-                              Padding(
-                                padding: EdgeInsets.only(top: 8),
-                                child: CircleAvatar(
-                                  radius: 22,
-                                  backgroundColor: Colors.white,
-
-                                  backgroundImage: NetworkImage(
-                                      "https://avatars.githubusercontent.com/u/61885011?v=4"), //"https://cdn.dribbble.com/userupload/3668818/file/original-82d33fec976d80ee37bdc10eb32c87c2.png?compress=1&resize=240x180&vertical=center"),
-                                ),
-                              ),
+                              (List.from(controller.messages.reversed)[index]
+                                          .isBehind ==
+                                      IsBehind.User)
+                                  ? Stack(
+                                      children: [
+                                        Padding(
+                                          padding: EdgeInsets.only(top: 8),
+                                          child: CircleAvatar(
+                                            radius: 22,
+                                            backgroundColor: Colors.white,
+                                            backgroundImage: NetworkImage(
+                                                "https://avatars.githubusercontent.com/u/61885011?size=120"), //"https://cdn.dribbble.com/userupload/3668818/file/original-82d33fec976d80ee37bdc10eb32c87c2.png?compress=1&resize=240x180&vertical=center"),
+                                          ),
+                                        ),
+                                        Container(
+                                          height: 51,
+                                          width: 42,
+                                          child: Align(
+                                            alignment: Alignment.bottomRight,
+                                            child: SizedBox(
+                                              height: 10,
+                                              width: 10,
+                                              child: Container(
+                                                  decoration: BoxDecoration(
+                                                      color: Colors.green,
+                                                      border: Border.all(
+                                                          color: Colors.white),
+                                                      borderRadius:
+                                                          BorderRadius.all(
+                                                              Radius.circular(
+                                                                  20)))),
+                                            ),
+                                          ),
+                                        )
+                                      ],
+                                    )
+                                  : Container(
+                                      child: CircleAvatar(
+                                          radius: 22,
+                                          backgroundColor: Colors.white),
+                                    ),
                             if (SizerUtil.orientation != Orientation.portrait)
                               SizedBox(width: 16),
                             Container(
                                 margin: EdgeInsets.symmetric(vertical: 8),
                                 padding: EdgeInsets.symmetric(
                                     vertical: 20, horizontal: 25),
-                                constraints: BoxConstraints(maxWidth: 60.w),
+                                constraints: BoxConstraints(
+                                    maxWidth: (SizerUtil.orientation ==
+                                            Orientation.portrait)
+                                        ? 80.w
+                                        : 60.w),
                                 decoration: BoxDecoration(
                                     color: (List.from(controller
                                                 .messages.reversed)[index]
@@ -129,7 +219,7 @@ class ConversationPage extends StatelessWidget {
                                         : Colors.blue,
                                     borderRadius: BorderRadius.circular(8)),
                                 child: Builder(builder: (context) {
-                                  return Linkify(
+                                  return SelectableLinkify(
                                     onOpen: (link) {
                                       html.window.open(link.url, "_blank");
                                     },
@@ -157,15 +247,15 @@ class ConversationPage extends StatelessWidget {
                       (SizerUtil.orientation == Orientation.portrait) ? 20 : 35,
                 ),
                 child: SizedBox(
-                  height: 2,
+                  height: 3,
                   child: Divider(
-                    color: Color(0xFFFAFAFA),
-                    thickness: 2,
+                    color: Color.fromARGB(187, 242, 242, 242),
+                    thickness: 1,
                   ),
                 ),
               ),
               SizedBox(
-                height: 12,
+                height: 16,
               ),
               Padding(
                 padding: EdgeInsets.only(
@@ -180,7 +270,7 @@ class ConversationPage extends StatelessWidget {
                       children: [
                         Flexible(
                           child: Material(
-                            color: Color(0xFFFAFAFA),
+                            color: Color.fromARGB(217, 249, 249, 249),
                             shape: RoundedRectangleBorder(
                               borderRadius:
                                   BorderRadius.circular(8), // <-- Radius
@@ -209,11 +299,14 @@ class ConversationPage extends StatelessWidget {
                                         fontWeight: FontWeight.normal),
                                     textAlignVertical: TextAlignVertical.center,
                                     decoration: InputDecoration(
+                                        contentPadding:
+                                            EdgeInsets.only(bottom: 8.5),
                                         hintText: "Write me..",
                                         hintStyle: TextStyle(
-                                            color: Color(0xFFA4A4A4),
+                                            color: Color.fromARGB(
+                                                255, 144, 144, 144),
                                             fontSize: 16,
-                                            fontWeight: FontWeight.w200),
+                                            fontWeight: FontWeight.normal),
                                         border: InputBorder.none,
                                         prefixIcon: (SizerUtil.orientation ==
                                                 Orientation.portrait)

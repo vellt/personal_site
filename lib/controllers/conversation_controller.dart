@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'package:flutter/cupertino.dart';
 import 'package:http/http.dart' as http;
 import 'package:get/get.dart';
 import 'package:personal_site/models/command.dart';
@@ -196,7 +195,7 @@ class ConversationController extends GetxController {
     // TODO:
     super.onInit();
     final response = await http.get(Uri.parse(
-        "https://gist.githubusercontent.com/vellt/70bef82cc7a33783c2d17037de5c564e/raw/14caa533af5cd2abf8a1b59403042ab2ca594209/index.json"));
+        "https://gist.githubusercontent.com/vellt/70bef82cc7a33783c2d17037de5c564e/raw/51ceb9f6cd1f4ed3e221e5b042e4043538684d59/index.json"));
     commands = List<Command>.from(
         json.decode(response.body).map((item) => Command.fromJson(item)));
 
